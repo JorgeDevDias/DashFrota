@@ -3,7 +3,7 @@ import requests
 import streamlit as st
 import json
 
-st.set_page_config(page_title='Dash Frota')
+st.set_page_config(page_title='Dash Frota',layout='wide')
 with st.container():
     st.title('Dashbord Frota')
     st.write('---')
@@ -14,7 +14,7 @@ def carregar_dados():
     dados_api_tt = requests.get('https://frotafroteq.bubbleapps.io/api/1.1/obj/acompanhamentoFrota')
     dados_dic_tt = dados_api_tt.json()
     df_tt = pd.DataFrame(dados_dic_tt['response']['results'])
-    df_tt = df_tt[['Prefixo','Status','Contrato','Tipo de Equipamento','Cidade Atual']]
+    df_tt = df_tt[['Motorista','Prefixo','Status','Tipo de Equipamento','Cidade Atual','Atendimento','Chegada (Origem)','Chegada (Destino)','Saída (Origem)','Observação_VIX']]
     return df_tt
 
 df_tt = carregar_dados()
@@ -33,25 +33,19 @@ st.download_button(
 )
 
 
-
-
-
-
-
-
-
-
-
-
-
 df_tt = carregar_dados()
 
 status_tt = df_tt[['Status', 'Prefixo']]
 status_tt = status_tt.groupby('Status').count()
 status_tt = status_tt.sort_values('Prefixo', ascending=False)
+op_status_tt = df_tt.Status.unique().tolist()
+op_cidade_tt = df_tt['Cidade Atual'].unique().tolist()
+op_tipo_tt = df_tt['Tipo de Equipamento'].unique().tolist()
 
 with st.container():
     st.subheader('Frota TT')
-    st.bar_chart(status_tt,y='Prefixo')
-with st.container():
-    st.dataframe(df_tt)
+    cidade = st.selectbox('Cidade Atual', op_cidade_tt)
+    status = st.selectbox('Status da Frota',op_status_tt)
+    #tipo = st.selectbox('Status da Frota', op_tipo_tt)
+    df_tt_filtrado = df_tt[(df_tt['Status'] == status) & (df_tt['Cidade Atual'] == cidade)]
+    st.dataframe(df_tt_filtrado)

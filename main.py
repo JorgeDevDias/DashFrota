@@ -44,8 +44,11 @@ op_tipo_tt = df_tt['Tipo de Equipamento'].unique().tolist()
 
 with st.container():
     st.subheader('Frota TT')
-    cidade = st.selectbox('Cidade Atual', op_cidade_tt)
-    status = st.selectbox('Status da Frota',op_status_tt)
+    col1, col2 = st.columns(2)
+    with col1:
+        cidade = st.selectbox('Cidade Atual', op_cidade_tt)
+    with col2:
+        status = st.selectbox('Status da Frota',op_status_tt)
     #tipo = st.selectbox('Status da Frota', op_tipo_tt)
     df_tt_filtrado = df_tt[(df_tt['Status'] == status) & (df_tt['Cidade Atual'] == cidade)]
-    st.dataframe(df_tt_filtrado)
+    st.dataframe(df_tt_filtrado[['Motorista','Prefixo','Tipo de Equipamento','Atendimento','Chegada (Origem)','Chegada (Destino)','Saída (Origem)','Observação_VIX']])
